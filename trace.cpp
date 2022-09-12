@@ -253,7 +253,8 @@ SlVector3 Tracer::shade(const HitRecord &hr) const {
     SlVector3 LightPos(0.0);
     SlVector3 normal = hr.n;
     SlVector3 diffuse(0.0);
-    SlVector3 reflection(0.0);
+    SlVector3 reflection1(0.0);
+    SlVector3 reflection2(0.0);
     SlVector3 viewer = hr.v;
     SlVector3 specular(0.0);
     SlVector3 surfaceTolight = (0.0);
@@ -281,12 +282,12 @@ SlVector3 Tracer::shade(const HitRecord &hr) const {
             }
         }
 
-        reflection = 2*normal*multi(normal, V1) - V1;
-        normalize(reflection);
+        reflection1 = 2*normal*multi(normal, V1) - V1;
+        normalize(reflection1);
 
         if (!shadow) {
             diffuse = hr.f.kd * max_f(0,multi(V1,normal));
-            specular = hr.f.ks * pow(max_f(0,multi(reflection, viewer)),hr.f.shine);
+            specular = hr.f.ks * pow(max_f(0,multi(reflection1, viewer)),hr.f.shine);
             Totalcolor = hr.f.color*light.c;
             color = (diffuse + specular + Normalcolor) * Totalcolor + color;
         }
@@ -294,8 +295,9 @@ SlVector3 Tracer::shade(const HitRecord &hr) const {
             color += Normalcolor * Totalcolor;
         }
     }
-
-    Ray reflectionRay = Ray(hr.p, reflection);
+    reflection2 = 2*normal*multi(normal, viewer) - viewer;
+    normalize(reflection2);
+    Ray reflectionRay = Ray(hr.p, reflection2);
     reflectionRay.depth = hr.raydepth + 1;
     normalize(reflectionRay.d);
     for(unsigned int k=0; k < surfaces.size(); k++){
