@@ -1,0 +1,1 @@
+<img src ="balls.ppm" alt = "sphere" style = "zoom:50%">
